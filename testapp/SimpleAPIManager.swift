@@ -38,37 +38,41 @@ class SimpleAPIManager: NSObject {
         
         if let url = NSURL(string: requestString) {
         
-        
         let request = NSURLRequest(URL: url)
         let session: NSURLSession = NSURLSession.sharedSession()
        
         let task = session.dataTaskWithRequest(request, completionHandler: {data, response, error -> Void in
-
             
             do {
                 if let jsonResult = try NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as? NSDictionary {
 
                     if jsonResult.count>0 {
                         
-                        let response: NSDictionary = jsonResult["response"] as! NSDictionary
-                        let groups:[NSDictionary] = response["groups"] as! [NSDictionary]
+                        guard let response: NSDictionary = jsonResult["response"] as? NSDictionary,
+                             let groups:[NSDictionary] = response["groups"] as? [NSDictionary]
+                            else {  return }
 
                         for items:NSDictionary in groups {
                             
-                            let itemList: [NSDictionary] = items["items"] as! [NSDictionary]
+                           guard let itemList: [NSDictionary] = items["items"] as?[NSDictionary]
+                            else { break }
  
                             for place:NSDictionary in itemList {
                                 
-                                let places : NSDictionary = place["venue"] as! NSDictionary
-                                let placeName:String = places["name"] as! String
+                                guard let places : NSDictionary = place["venue"] as? NSDictionary
+                                    else { break }
+                                
+                                    let placeName:String = (places["name"] as? String)!
                                 
                                // let photos : NSDictionary = places["photos"] as! NSDictionary
                                
-                                let l: NSDictionary   = places["location"] as! NSDictionary
+                                guard let l: NSDictionary = places["location"] as? NSDictionary,
                                  let venueLocation:CLLocation = CLLocation(latitude: l["lat"] as! Double, longitude: l["lng"] as! Double)
+                                    else { break}
+                                
                                 
                                  let venueModel = VenueModel(title: placeName, coordinate: venueLocation)
-
+                                
                                  // couldn't get any photos ... defaulting download image..download async
                                     let fileUrl = NSURL(string: "http://orig10.deviantart.net/6eeb/f/2012/254/e/6/winnie_the_pooh_png_by_puckaabieberss-d5eeazb.png")
                                 

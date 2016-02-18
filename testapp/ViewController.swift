@@ -29,7 +29,7 @@ class ViewController: BaseViewController,MKMapViewDelegate,CLLocationManagerDele
         }
 
         APIManager.delegate = self;
-        mapView.delegate = self
+        self.self.mapView.delegate = self
      
     }
     
@@ -127,7 +127,7 @@ class ViewController: BaseViewController,MKMapViewDelegate,CLLocationManagerDele
             annotationView?.leftCalloutAccessoryView = vImage
    
         } else {
-            annotationView!.annotation = annotation
+            annotationView?.annotation = annotation
         }
 
         return annotationView

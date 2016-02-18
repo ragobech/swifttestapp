@@ -12,7 +12,7 @@ import MapKit
 class VenueModel: NSObject {
     
     
-    var title: String!
+    var title: String?
     var coordinate: CLLocation
     var image: UIImage? = nil
 
@@ -33,14 +33,15 @@ class VenueModel: NSObject {
         getDataFromUrl(url) { (data, response, error)  in
             dispatch_async(dispatch_get_main_queue()) { () -> Void in
                 guard let data = data where error == nil else { return }
-                print(response?.suggestedFilename ?? "")
+                //print(response?.suggestedFilename ?? "")
                 self.image = UIImage(data: data)!
             }
         }
     }
     
-    func venueImage() -> UIImage {
-        return image!
+    func venueImage() -> UIImage? {
+        if (image != nil) { return image!}
+        else {return image}
     }
     
     
