@@ -28,8 +28,8 @@ class ViewController: BaseViewController,MKMapViewDelegate,CLLocationManagerDele
             self.locationManager?.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
         }
 
-        APIManager.delegate = self;
-        self.self.mapView.delegate = self
+        APIManager.delegate = self
+        self.mapView.delegate = self
      
     }
     
