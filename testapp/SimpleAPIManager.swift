@@ -34,11 +34,14 @@ class SimpleAPIManager: NSObject {
     func exploreVenues(path: String,location: CLLocation) -> [VenueModel] {
        let requestString = "\(path)/venues/explore?client_id=\(clientIDAPIKey)&client_secret=\(clientAPISecret)&v=20130815&ll=\(location.coordinate.latitude),\(location.coordinate.longitude)"
         
-        let url = NSURL(string: requestString)
-        let request = NSURLRequest(URL: url!)
-        let session: NSURLSession = NSURLSession.sharedSession()
         var venues = [VenueModel]()
         
+        if let url = NSURL(string: requestString) {
+        
+        
+        let request = NSURLRequest(URL: url)
+        let session: NSURLSession = NSURLSession.sharedSession()
+       
         let task = session.dataTaskWithRequest(request, completionHandler: {data, response, error -> Void in
 
             
@@ -46,6 +49,7 @@ class SimpleAPIManager: NSObject {
                 if let jsonResult = try NSJSONSerialization.JSONObjectWithData(data!, options: .MutableLeaves) as? NSDictionary {
 
                     if jsonResult.count>0 {
+                        
                         let response: NSDictionary = jsonResult["response"] as! NSDictionary
                         let groups:[NSDictionary] = response["groups"] as! [NSDictionary]
 
@@ -81,8 +85,12 @@ class SimpleAPIManager: NSObject {
             }
             
         })
+            
+        
         
         task.resume()
+            
+        }
         return venues
     }
     

@@ -10,7 +10,7 @@ import UIKit
 import MapKit
 import CoreLocation
 
-class ViewController: UIViewController,MKMapViewDelegate,CLLocationManagerDelegate, SimpleAPIProtocol {
+class ViewController: BaseViewController,MKMapViewDelegate,CLLocationManagerDelegate, SimpleAPIProtocol {
 
     var venuesList = [VenueModel]()
     var locationManager: CLLocationManager?
@@ -22,19 +22,42 @@ class ViewController: UIViewController,MKMapViewDelegate,CLLocationManagerDelega
         super.viewDidLoad()
         
         self.locationManager = CLLocationManager()
-        self.locationManager?.requestWhenInUseAuthorization()
+        
         if CLLocationManager.locationServicesEnabled() {
             self.locationManager?.delegate = self
             self.locationManager?.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
-            self.locationManager?.startUpdatingLocation()
-            self.mapView.showsUserLocation = true
-            
         }
-        
+
         APIManager.delegate = self;
         mapView.delegate = self
      
     }
+    
+    func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
+
+        switch status {
+        case .NotDetermined:
+            self.locationManager?.requestWhenInUseAuthorization()
+            break
+        case .AuthorizedWhenInUse:
+            self.locationManager?.startUpdatingLocation()
+            self.mapView.showsUserLocation = true
+            break
+        case .AuthorizedAlways:
+            self.locationManager?.startUpdatingLocation()
+            self.mapView.showsUserLocation = true
+            break
+        case .Restricted:
+            // restricted
+            break
+        case .Denied:
+            // user denied 
+            break
+   
+        }
+    }
+ 
+    
 
     func didReceiveVenues(results: [VenueModel]) {
 
@@ -45,7 +68,6 @@ class ViewController: UIViewController,MKMapViewDelegate,CLLocationManagerDelega
     
     func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
 
-        
           //  guard let location = locations.last as? CLLocation else { return }
             let location = locations.last
             let center = CLLocationCoordinate2D(latitude:location!.coordinate.latitude,longitude:location!.coordinate.longitude)
@@ -58,7 +80,6 @@ class ViewController: UIViewController,MKMapViewDelegate,CLLocationManagerDelega
     
     func createAnnotationsWithVenues(venues: [VenueModel]) {
         
-        
         for ven: VenueModel in venues {
             
             let locationInfo = ven.coordinate
@@ -69,8 +90,7 @@ class ViewController: UIViewController,MKMapViewDelegate,CLLocationManagerDelega
             let annotation = MKPointAnnotation()
             annotation.coordinate = coordinate
             annotation.title = ven.title
-            annotation.subtitle = "Let's go!"
-    
+            annotation.subtitle = NSLocalizedString("Let's go!", comment: "comment")
             mapView.addAnnotation(annotation)
             
         }
@@ -89,6 +109,7 @@ class ViewController: UIViewController,MKMapViewDelegate,CLLocationManagerDelega
     
     
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+        
         if annotation is MKUserLocation {
             return nil
         }
